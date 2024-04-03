@@ -2,12 +2,38 @@
 import { reactive, ref } from 'vue'
 const titulo = ref('Oi VueJs!')
 const mostrarResultado = ref(false)
+
+const categorias = [
+  {
+    id: 1,
+    nome: 'Eletrônico'
+  },
+
+  {
+    id: 2,
+    nome: 'Vestuário'
+  },
+
+  {
+    id: 3,
+    nome: 'Brinquedos'
+  },
+
+  {
+    id: 4,
+    nome: 'Beleza'
+  }
+]
 const produto = reactive({
   nome: '',
-  preco: 0,
+  preço: 0,
   quantidade: 0,
   categorias: []
 })
+
+function formatarPreco(preço) {
+  return `R$ ${preço.toFixed(2).replace('.', ',')}` //template string
+}
 </script>
 
 <template>
@@ -24,13 +50,23 @@ const produto = reactive({
 
       <div class="row">
         <label for=""> Preço (em reais): </label>
-        <input type="text" v-model="produto.preço" />
+        <input type="number" step="0.01" v-model="produto.preço" />
       </div>
 
       <div class="row">
         <label for=""> Quantidade: </label>
         <input type="text" v-model="produto.quantidade" />
       </div>
+
+      <fieldset>
+        <legend>Categorias</legend>
+        <div class="itens-checkbox">
+          <template v-for="categoria in categorias" :key="categoria.id">
+            <input type="checkbox" :value="categoria.id" v-model="produto.categorias" />
+            {{ categoria.nome }}
+          </template>
+        </div>
+      </fieldset>
       <div class="row">
         <label for=""> Categoria: </label>
         <input type="text" v-model="produto.categorias" />
@@ -38,15 +74,13 @@ const produto = reactive({
       <button @click="mostrarResultado = !mostrarResultado">Mostrar</button>
     </div>
 
-    <div class="resultado">
-      <div v-if="mostrarResultado" class="resultado">
-        <h2>Dados do produto</h2>
-        <p>nome: {{ produto.nome }}</p>
-        <P>preço: {{ produto.preço }}</P>
-        <p>em estoque: {{ produto.quantidade }}</p>
-        <p>categorias: {{ produto.categorias }}</p>
-        <p>{{ mostrarResultado }}</p>
-      </div>
+    <div v-if="mostrarResultado" class="resultado">
+      <h2>Dados do produto</h2>
+      <p>nome: {{ produto.nome }}</p>
+      <P>preço: {{ formatarPreco(produto.preço) }}</P>
+      <p>em estoque: {{ produto.quantidade }}</p>
+      <p>categorias: {{ produto.categorias }}</p>
+      <p>{{ mostrarResultado }}</p>
     </div>
   </div>
 </template>
@@ -67,6 +101,11 @@ const produto = reactive({
   margin-top: 1rem;
 }
 
+.formulario .itens-checkbox {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
 .formulario,
 .resultado {
   width: 45vw;
